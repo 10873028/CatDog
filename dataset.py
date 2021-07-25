@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import re
 from torch.utils.data import Dataset
@@ -16,16 +17,16 @@ class CatDog(Dataset):
 
     def __getitem__(self, index):
         file = self.images[index]
-        img = Image.open(os.path.join(self.root, file))
+        img = np.array(Image.open(os.path.join(self.root, file)))
+
+        if self.transform is not None:
+            img = self.transform(image=img)["image"]
 
         if "dog" in file:
             label = 1
         elif "cat" in file:
             label = 0
         else:
-            assert False
-
-        if self.transform is not None:
-            img = self.transform(img)
+            label = -1
 
         return img, label
